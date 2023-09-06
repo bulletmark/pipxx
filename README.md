@@ -15,15 +15,16 @@ line arguments and options. Just run `pipxx` the same as you would run
 The latest version and documentation is available at
 https://github.com/bulletmark/pipxx.
 
-### Global application installation by root
+### Enhancement 1: Global application installation by root
 
 `pipx` is used normally to install applications for a single user. It
 can also [install applications
 globally](https://pypa.github.io/pipx/installation/#installation-options)
-as root but that is awkward because you have to manually set
-environment variables. `pipxx` recognises when it is run as root (or
-with `sudo`) and automatically sets appropriate system global
-`PIPX_BIN_DIR` and `PIPX_HOME` directories for `pipx`.
+as root but that is [awkward](https://github.com/pypa/pipx/issues/754)
+because you have to manually set environment variables. `pipxx`
+recognises when it is run as root (or with `sudo`) and automatically
+sets appropriate system global `PIPX_BIN_DIR` and `PIPX_HOME`
+directories for `pipx`.
 
 E.g. to install application as normal user:
 
@@ -43,7 +44,7 @@ Note, to see the global directories selected by `pipxx` for your system:
 $ sudo pipxx environment
    ```
 
-### Enhancement of pipx list output
+### Enhancement 2: Improved pipx list output
 
 [`pipx list`](https://pypa.github.io/pipx/docs/#pipx-list)
 output lacks some useful information. `pipxx` adds the following
