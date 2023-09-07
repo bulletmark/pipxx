@@ -11,6 +11,14 @@ from pathlib import Path
 HOMESTR = str(Path('~').expanduser())
 VMATCH = 'venvs are in '
 
+def get_root_env() -> dict[str, str]:
+    'Return environment for root installs'
+    base = Path(sys.base_prefix)
+    env = os.environ.copy()
+    env['PIPX_BIN_DIR'] = str(base / 'bin')
+    env['PIPX_HOME'] = str(base / 'share' / 'pipx')
+    return env
+
 def unexpanduser(path: str) -> str:
     'Return string path with $HOME in string path substituted with ~'
     if path.startswith(HOMESTR):
@@ -52,13 +60,7 @@ def main() -> int | None:
     'Main code'
     # If invoked as root then set appropriate system directories for
     # installs
-    if os.geteuid() == 0:
-        base = Path(sys.base_prefix)
-        env = os.environ.copy()
-        env['PIPX_BIN_DIR'] = str(base / 'bin')
-        env['PIPX_HOME'] = str(base / 'share' / 'pipx')
-    else:
-        env = None
+    env = get_root_env() if os.geteuid() == 0 else None
 
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     cmdlist = f'pipx {cmd}'.split() + sys.argv[2:]
