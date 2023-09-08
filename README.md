@@ -1,5 +1,6 @@
 ## PIPXX - Wrapper for pipx to add some minor functionality
 [![PyPi](https://img.shields.io/pypi/v/pipxx)](https://pypi.org/project/pipxx/)
+
 [`pipxx`][pipxx] is a simple command line utility to wrap the usage of
 [`pipx`][pipx] to provide a couple of improved functions:
 
