@@ -1,4 +1,5 @@
 ## PIPXX - Wrapper for pipx to add some minor functionality
+[![PyPi](https://img.shields.io/pypi/v/pipxx)](https://pypi.org/project/pipxx/)
 [`pipxx`][pipxx] is a simple command line utility to wrap the usage of
 [`pipx`][pipx] to provide a couple of improved functions:
 
@@ -56,19 +57,21 @@ to the `pipx list` output:
    [__editable__](https://pypa.github.io/pipx/docs/#pipx-install).
 
 ## Installation or upgrade or removal
-
-Ensure that [`pipx`](https://pypa.github.io/pipx/) is installed then type:
+Note [pipxx is on
+PyPI](https://pypi.org/project/pipxx/) so just ensure that
+[`pipx`](https://pypa.github.io/pipx/) is installed then type the
+following:
 
 To install:
 
 ```bash
-$ pipx install git+https://github.com/bulletmark/pipxx
+$ pipx install pipxx
 ```
 
 To upgrade:
 
 ```bash
-$ pipx install -f git+https://github.com/bulletmark/pipxx
+$ pipx upgrade pipxx
 ```
 
 To remove:
