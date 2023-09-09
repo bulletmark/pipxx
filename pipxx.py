@@ -8,15 +8,16 @@ import subprocess
 import sys
 from pathlib import Path
 
-HOMESTR = str(Path('~').expanduser())
+HOMESTR = str(Path.home())
 VMATCH = 'venvs are in '
 
-def get_root_env() -> dict[str, str]:
+def root_env() -> dict[str, str]:
     'Return environment for root installs'
-    base = Path(sys.base_prefix)
     env = os.environ.copy()
-    env['PIPX_BIN_DIR'] = str(base / 'bin')
-    env['PIPX_HOME'] = str(base / 'share' / 'pipx')
+    for envvar, tdir in (('PIPX_BIN_DIR', '/usr/local/bin'),
+                         ('PIPX_HOME', '/opt/pipx')):
+        Path(tdir).mkdir(parents=True, exist_ok=True)
+        env[envvar] = tdir
     return env
 
 def unexpanduser(path: str) -> str:
@@ -60,7 +61,7 @@ def main() -> int | None:
     'Main code'
     # If invoked as root then set appropriate system directories for
     # installs
-    env = get_root_env() if os.geteuid() == 0 else None
+    env = root_env() if os.geteuid() == 0 else None
 
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     cmdlist = f'pipx {cmd}'.split() + sys.argv[2:]
