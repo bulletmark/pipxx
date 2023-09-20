@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Callable
 
 HOMESTR = str(Path.home())
 VMATCH = 'venvs are in '
@@ -26,7 +27,12 @@ def unexpanduser(path: str) -> str:
         path = path.replace(HOMESTR, '~', 1)
     return path
 
-def do_list(cmds: list[str], env: dict[str, str] | None) -> None:
+intercepts = {}
+def intercept_cmd(func: Callable) -> None:
+    intercepts[func.__name__[4:]] = func
+
+@intercept_cmd
+def cmd_list(cmds: list[str], env: dict[str, str] | None) -> None:
     'Add some extra info to list command output'
     cmd = subprocess.Popen(cmds, stdout=subprocess.PIPE, text=True,
                            env=env)
@@ -66,9 +72,10 @@ def main() -> int | None:
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     cmdlist = f'pipx {cmd}'.split() + sys.argv[2:]
 
-    # Intercept special list command
-    if cmd == 'list':
-        return do_list(cmdlist, env)  # type: ignore
+    # Intercept any commands we have reimplemented
+    cmd = intercepts.get(cmd)
+    if cmd:
+        return cmd(cmdlist, env)
 
     return subprocess.run(cmdlist, env=env).returncode
 
