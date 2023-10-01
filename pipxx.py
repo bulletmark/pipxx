@@ -7,12 +7,12 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Dict, List, Optional
 
 HOMESTR = str(Path.home())
 VMATCH = 'venvs are in '
 
-def root_env() -> dict[str, str]:
+def root_env() -> Dict[str, str]:
     'Return environment for root installs'
     env = os.environ.copy()
     for envvar, tdir in (('PIPX_BIN_DIR', '/usr/local/bin'),
@@ -32,10 +32,9 @@ def intercept_cmd(func: Callable) -> None:
     intercepts[func.__name__[4:]] = func
 
 @intercept_cmd
-def cmd_list(cmds: list[str], env: dict[str, str] | None) -> None:
+def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> None:
     'Add some extra info to list command output'
-    cmd = subprocess.Popen(cmds, stdout=subprocess.PIPE, text=True,
-                           env=env)
+    cmd = subprocess.Popen(cmds, stdout=subprocess.PIPE, text=True, env=env)
     bdir = None
     for line in (cmd.stdout or []):
         line = line.rstrip()
@@ -63,7 +62,7 @@ def cmd_list(cmds: list[str], env: dict[str, str] | None) -> None:
 
         print(line)
 
-def main() -> int | None:
+def main() -> Optional[int]:
     'Main code'
     # If invoked as root then set appropriate system directories for
     # installs
@@ -74,10 +73,8 @@ def main() -> int | None:
 
     # Intercept any commands we have reimplemented
     cmd = intercepts.get(cmd)
-    if cmd:
-        return cmd(cmdlist, env)
-
-    return subprocess.run(cmdlist, env=env).returncode
+    return cmd(cmdlist, env) if cmd \
+            else subprocess.run(cmdlist, env=env).returncode
 
 if __name__ == '__main__':
     sys.exit(main())
