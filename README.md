@@ -86,9 +86,13 @@ I.e. `pipxx` will work out from `3.12` that you want the path
 installed at the time of this example. You could alternately type `pipxx
 install --python 3 cowsay`, or `pipxx install --python 3.12.0 cowsay`.
 
-Actually, this is a commonly used option but unfortunately `pipx` does
-not provide a short-form option for it. So `pipxx` adds `-P` as an alias
-for `--python` allowing you to simply type:
+Note the automatically selected path is dependent on your
+system/installation and is derived by `pipxx` from the output of `pyenv
+root`.
+
+Actually, `--python` is a commonly used option but unfortunately `pipx`
+does not provide a short-form option for it. So `pipxx` also adds `-P`
+as an alias for `--python` allowing you to simply type:
 
 ```sh
 $ pipxx install -P 3.12 cowsay
