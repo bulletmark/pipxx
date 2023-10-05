@@ -102,6 +102,11 @@ def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     else:
         return False
 
+    # If given python program/version is clearly a path then ignore
+    # immediately
+    if os.sep in version:
+        return False
+
     # If given python program is a pyenv version then insert the pyenv
     # path to the executable
     pyenv_root = run('pyenv root')
