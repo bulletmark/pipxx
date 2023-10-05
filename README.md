@@ -2,10 +2,14 @@
 [![PyPi](https://img.shields.io/pypi/v/pipxx)](https://pypi.org/project/pipxx/)
 
 [`pipxx`][pipxx] is a simple command line utility to wrap the usage of
-[`pipx`][pipx] to provide a couple of improved functions:
+[`pipx`][pipx] to provide some minor improved functions:
 
-1. [Global application installation by root](#global-application-installation-by-root)
-2. [Enhancement of pipx list output](#enhancement-of-pipx-list-output)
+1. [Global application installation by
+   root](#enhancement-1-global-application-installation-by-root)
+2. [Enhancement of pipx list
+   output](#enhancement-2-improved-pipx-list-output)
+3. [Automatic determination of pyenv Python path for
+   install](#enhancement-3-automatic-determination-of-pyenv-python-path-for-install)
 
 See the description of these enhancements below.
 
@@ -57,10 +61,43 @@ to the `pipx list` output:
 2. Whether the application is installed as
    [__editable__](https://pypa.github.io/pipx/docs/#pipx-install).
 
+### Enhancement 3: Automatic determination of pyenv Python path for install
+
+When installing, you can tell `pipx` to use a specific version/path of
+Python using the `--python` option. Unfortunately, you have to specify
+the full path to the python interpreter you want. Very commonly, users
+use [`pyenv`](https://github.com/pyenv/pyenv) to install install
+multiple versions of Python.
+
+So with `pipx` you have to type:
+
+```sh
+$ pipx install --python ~/.pyenv/versions/3.12.0/bin/python cowsay
+```
+
+With `pipxx` you merely have to type:
+
+```sh
+$ pipxx install --python 3.12 cowsay
+```
+
+I.e. `pipxx` will work out from `3.12` that you want the path
+`~/.pyenv/versions/3.12.0/bin/python`, i.e. the latest `3.12` version
+installed at the time of this example. You could alternately type `pipxx
+install --python 3 cowsay`, or `pipxx install --python 3.12.0 cowsay`.
+
+Actually, this is a commonly used option but unfortunately `pipx` does
+not provide a short-form option for it. So `pipxx` adds `-P` as an alias
+for `--python` allowing you to simply type:
+
+```sh
+$ pipxx install -P 3.12 cowsay
+```
+
 ## Installation or upgrade or removal
-Note [pipxx is on
-PyPI](https://pypi.org/project/pipxx/) so just ensure that
-[`pipx`](https://pypa.github.io/pipx/) is installed then type the
+
+Note [pipxx is on PyPI](https://pypi.org/project/pipxx/) so just ensure
+that [`pipx`](https://pypa.github.io/pipx/) is installed then type the
 following:
 
 To install:
