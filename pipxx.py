@@ -26,12 +26,12 @@ def unexpanduser(path: str) -> str:
     return path.replace(HOMESTR, '~', 1) \
             if path.startswith(HOMESTR) else path
 
-def run(cmd: str) -> Optional[str]:
+def run(cmd: str, env: Optional[Dict[str, str]] = None) -> Optional[str]:
     'Run given shell command string'
     cmd += ' 2>/dev/null'
     try:
         res = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE,
-                             universal_newlines=True)
+                             universal_newlines=True, env=env)
     except Exception:
         return None
 
@@ -45,7 +45,8 @@ def intercept_cmd(func: Callable) -> None:
     intercepts[func.__name__[4:]] = func
 
 @intercept_cmd
-def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_list(cmds: List[str],
+             env: Optional[Dict[str, str]] = None) -> bool:
     'Add some extra info to list command output'
     cmd = subprocess.Popen(cmds, stdout=subprocess.PIPE,
                            universal_newlines=True, env=env)
@@ -78,7 +79,8 @@ def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     return True
 
 @intercept_cmd
-def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_install(cmds: List[str],
+                env: Optional[Dict[str, str]] = None) -> bool:
     'Inserts path to pyenv python executable if --python given'
     for opt in ('--python', '-P'):
         # Handle case where --python <path> is given as 2 option args
@@ -109,14 +111,54 @@ def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
 
     # If given python program is a pyenv version then insert the pyenv
     # path to the executable
-    pyenv_root = run('pyenv root')
+    pyenv_root = run('pyenv root', env)
     if pyenv_root:
-        pyenv_version = run(f'pyenv latest {version}')
+        pyenv_version = run(f'pyenv latest {version}', env)
         if pyenv_version:
             pyexe_path = Path(pyenv_root, 'versions', pyenv_version,
                               'bin', 'python')
             if pyexe_path.exists():
                 cmds[index] = arg + str(pyexe_path)
+
+    return False
+
+@intercept_cmd
+def cmd_uninstall(cmds: List[str],
+                  env: Optional[Dict[str, str]] = None) -> bool:
+    'Intercepts "." arg and substitutes it with package name'
+    if '.' not in cmds:
+        return False
+
+    pipx_root = run('pipx environment', env)
+    if not pipx_root:
+        return False
+
+    for line in pipx_root.splitlines():
+        if line.startswith('PIPX_HOME='):
+            pipx_home = Path(line.split('=', 1)[1].strip())
+            break
+    else:
+        return False
+
+    cwd = str(Path.cwd())
+
+    # Iterate over venvs and find one that matches current directory
+    for proj in (pipx_home / 'venvs').iterdir():
+        mfile = proj / 'pipx_metadata.json'
+        if not mfile.exists():
+            continue
+
+        mjson = json.loads(mfile.read_text())
+        mjson = mjson.get('main_package', {})
+        path = mjson.get('package_or_url', '')
+        if path.endswith(']'):
+            path = path.rsplit('[', 1)[0]
+
+        if path == cwd:
+            package = mjson.get('package')
+            if package:
+                cmds[cmds.index('.')] = package
+            break
 
     return False
 

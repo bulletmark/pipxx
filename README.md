@@ -2,14 +2,17 @@
 [![PyPi](https://img.shields.io/pypi/v/pipxx)](https://pypi.org/project/pipxx/)
 
 [`pipxx`][pipxx] is a simple command line utility to wrap the usage of
-[`pipx`][pipx] to provide some minor improved functions:
+[`pipx`][pipx] to provide some minor improved functions. Consider it an
+attempted proof of concept of these ideas.
 
 1. [Global application installation by
-   root](#enhancement-1-global-application-installation-by-root)
+   root](#enhancement-1-global-application-installation-by-root).
 2. [Enhancement of pipx list
-   output](#enhancement-2-improved-pipx-list-output)
+   output](#enhancement-2-improved-pipx-list-output).
 3. [Automatic determination of pyenv Python path for
-   install](#enhancement-3-automatic-determination-of-pyenv-python-path-for-install)
+   install](#enhancement-3-automatic-determination-of-pyenv-python-path-for-install).
+4. [Substitution of current directory with package name for
+   uninstall](#enhancement-4-substitution-of-current-directory-with-package-name-for-uninstall).
 
 See the description of these enhancements below.
 
@@ -96,6 +99,29 @@ as an alias for `--python` allowing you to simply type:
 
 ```sh
 $ pipxx install -P 3.12 cowsay
+```
+
+### Enhancement 4: Substitution of current directory with package name for uninstall
+
+Developers often use `pipx` to install and run an application they are
+working on from a local source directory. E.g. for an example
+application `myapp`:
+
+```sh
+$ pwd
+/home/myname/src/myapp
+$ pipx install -e .
+installed package myapp <...>
+```
+
+To uninstall this application you have to type `pipx uninstall myapp`.
+However, thinking symmetrically, you would expect `pipx uninstall .`
+would suffice. So `pipxx` adds the ability to do this:
+
+
+```sh
+$ pipxx uninstall .
+uninstalled myapp!
 ```
 
 ## Installation or upgrade or removal
