@@ -2,8 +2,8 @@
 [![PyPi](https://img.shields.io/pypi/v/pipxx)](https://pypi.org/project/pipxx/)
 
 [`pipxx`][pipxx] is a simple command line utility to wrap the usage of
-[`pipx`][pipx] to provide some minor improved functions. Consider it a
-proof of concept of these ideas.
+[`pipx`][pipx] to provide some minor improved functions. Consider
+[`pipxx`][pipxx] a proof of concept of some ideas for [`pipx`][pipx].
 
 1. [Global application installation by
    root](#enhancement-1-global-application-installation-by-root).
