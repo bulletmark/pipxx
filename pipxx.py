@@ -97,6 +97,7 @@ def cmd_install(cmds: List[str],
                 if optstr.startswith(f'{opt}='):
                     _, version = optstr.split('=', 1)
                     arg = '--python='
+                    cmds[index] = arg + version
                     break
             else:
                 continue
