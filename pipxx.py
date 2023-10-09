@@ -4,10 +4,11 @@
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, Iterator, List, Optional
 
 HOMESTR = str(Path.home())
 VMATCH = 'venvs are in '
@@ -26,7 +27,7 @@ def unexpanduser(path: str) -> str:
     return path.replace(HOMESTR, '~', 1) \
             if path.startswith(HOMESTR) else path
 
-def run(cmd: str, env: Optional[Dict[str, str]] = None) -> Optional[str]:
+def run(cmd: str, env: Optional[Dict[str, str]]) -> Optional[str]:
     'Run given shell command string'
     cmd += ' 2>/dev/null'
     try:
@@ -40,19 +41,22 @@ def run(cmd: str, env: Optional[Dict[str, str]] = None) -> Optional[str]:
 
     return res.stdout and res.stdout.strip()
 
+def pipe(cmd: List[str], env: Optional[Dict[str, str]]) -> Iterator[str]:
+    'Run given shell command string and yield output lines'
+    res = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                           universal_newlines=True, env=env)
+    for line in (res.stdout or []):
+        yield line.rstrip()
+
 intercepts = {}
 def intercept_cmd(func: Callable) -> None:
     intercepts[func.__name__[4:]] = func
 
 @intercept_cmd
-def cmd_list(cmds: List[str],
-             env: Optional[Dict[str, str]] = None) -> bool:
+def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     'Add some extra info to list command output'
-    cmd = subprocess.Popen(cmds, stdout=subprocess.PIPE,
-                           universal_newlines=True, env=env)
     bdir = None
-    for line in (cmd.stdout or []):
-        line = line.rstrip()
+    for line in pipe(cmds, env):
         if bdir:
             fields = line.split()
             if len(fields) > 1 and fields[0] == 'package':
@@ -79,9 +83,19 @@ def cmd_list(cmds: List[str],
     return True
 
 @intercept_cmd
-def cmd_install(cmds: List[str],
-                env: Optional[Dict[str, str]] = None) -> bool:
+def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     'Inserts path to pyenv python executable if --python given'
+    if any(opt in ('--help', '-h') for opt in cmds):
+        # Intercept help output to add enhanced functionality
+        for line in pipe(cmds, env):
+            if '--python ' in line:
+                line = re.sub('--python PYTHON *',
+                              '--python PYTHON, -P PYTHON ', line)
+                line = line.replace('executable ',
+                                    'executable, or pyenv version, ')
+            print(line)
+        return True
+
     for opt in ('--python', '-P'):
         # Handle case where --python <path> is given as 2 option args
         if opt in cmds:
@@ -124,8 +138,7 @@ def cmd_install(cmds: List[str],
     return False
 
 @intercept_cmd
-def cmd_uninstall(cmds: List[str],
-                  env: Optional[Dict[str, str]] = None) -> bool:
+def cmd_uninstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     'Intercepts "." arg and substitutes it with package name'
     if '.' not in cmds:
         return False
@@ -170,7 +183,7 @@ def main() -> Optional[int]:
     env = root_env() if os.geteuid() == 0 else None
 
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
-    cmdlist = f'pipx {cmd}'.split() + sys.argv[2:]
+    cmdlist = ['pipx', cmd] + sys.argv[2:]
 
     # Intercept any commands we have reimplemented
     cmd = intercepts.get(cmd)

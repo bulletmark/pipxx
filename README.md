@@ -101,6 +101,9 @@ as an alias for `--python` allowing you to simply type:
 $ pipxx install -P 3.12 cowsay
 ```
 
+Note that `pipxx` also adds a description of the added pyenv version
+option and the added `-P` alias option to the `install --help` output.
+
 ### Enhancement 4: Substitution of current directory with package name for uninstall
 
 Developers often use `pipx` to install and run an application they are
