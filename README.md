@@ -68,11 +68,11 @@ to the `pipx list` output:
 
 When installing, you can tell `pipx` to use a specific version/path of
 Python using the `--python` option. Unfortunately, you have to specify
-the full path to the python interpreter you want. Very commonly, users
-use [`pyenv`](https://github.com/pyenv/pyenv) to install install
-multiple versions of Python.
+the full path to the python interpreter you want. Very commonly,
+[`pyenv`](https://github.com/pyenv/pyenv) is used to install multiple
+versions of Python.
 
-So with `pipx` you have to type:
+So to use a specific pyenv Python version with `pipx` you have to type:
 
 ```sh
 $ pipx install --python ~/.pyenv/versions/3.12.0/bin/python cowsay
