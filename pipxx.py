@@ -18,8 +18,8 @@ def root_env() -> Dict[str, str]:
     env = os.environ.copy()
     for envvar, tdir in (('PIPX_BIN_DIR', '/usr/local/bin'),
                          ('PIPX_HOME', '/opt/pipx')):
-        Path(tdir).mkdir(parents=True, exist_ok=True)
-        env[envvar] = tdir
+        if envvar not in env:
+            env[envvar] = tdir
     return env
 
 def unexpanduser(path: str) -> str:
