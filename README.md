@@ -32,8 +32,8 @@ globally](https://pypa.github.io/pipx/installation/#installation-options)
 as root but that is [awkward](https://github.com/pypa/pipx/issues/754)
 because you have to manually set environment variables. `pipxx`
 recognises when it is run as root (or with `sudo`) and automatically
-sets appropriate system global `PIPX_BIN_DIR` and `PIPX_HOME`
-directories for `pipx`.
+sets appropriate system global `PIPX_BIN_DIR`, `PIPX_MAN_DIR`, and
+`PIPX_HOME` directories for `pipx`.
 
 E.g. to install application as normal user:
 

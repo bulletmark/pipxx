@@ -17,6 +17,7 @@ def root_env() -> Dict[str, str]:
     'Return environment for root installs'
     env = os.environ.copy()
     for envvar, tdir in (('PIPX_BIN_DIR', '/usr/local/bin'),
+                         ('PIPX_MAN_DIR', '/usr/local/share/man'),
                          ('PIPX_HOME', '/opt/pipx')):
         if envvar not in env:
             env[envvar] = tdir
