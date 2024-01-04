@@ -83,17 +83,14 @@ def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
         print(line)
     return True
 
-@intercept_cmd
-def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_install_common(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     'Inserts path to pyenv python executable if --python given'
     if any(opt in ('--help', '-h') for opt in cmds):
         # Intercept help output to add enhanced functionality
         for line in pipe(cmds, env):
             if '--python ' in line:
                 line = re.sub('--python PYTHON *',
-                              '--python PYTHON, -P PYTHON ', line)
-                line = line.replace('executable ',
-                                    'executable, or pyenv version, ')
+                              '--python PYTHON, -P pyenv_version ', line)
             print(line)
         return True
 
@@ -139,6 +136,14 @@ def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     return False
 
 @intercept_cmd
+def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+    return cmd_install_common(cmds, env)
+
+@intercept_cmd
+def cmd_reinstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+    return cmd_install_common(cmds, env)
+
+@intercept_cmd
 def cmd_uninstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     'Intercepts "." arg and substitutes it with package name'
     if '.' not in cmds:
@@ -150,8 +155,10 @@ def cmd_uninstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
 
     for line in pipx_root.splitlines():
         if line.startswith('PIPX_HOME='):
-            pipx_home = Path(line.split('=', 1)[1].strip())
-            break
+            pipx_home_str = line.split('=', 1)[1].strip()
+            if pipx_home_str:
+                pipx_home = Path(pipx_home_str)
+                break
     else:
         return False
 
