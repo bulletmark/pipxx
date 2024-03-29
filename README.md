@@ -1,6 +1,11 @@
 ## PIPXX - Wrapper for pipx to add some minor functionality
 [![PyPi](https://img.shields.io/pypi/v/pipxx)](https://pypi.org/project/pipxx/)
 
+_**Note: This project has been superceded by my
+[pipxu](https://github.com/bulletmark/pipxu) project which is a new
+implementation of [`pipx`][pipx] that uses
+[uv](https://github.com/astral-sh/uv).**_
+
 [`pipxx`][pipxx] is a simple command line utility to wrap the usage of
 [`pipx`][pipx] to provide some minor improved functions. Consider
 [`pipxx`][pipxx] a proof of concept of some ideas for [`pipx`][pipx].
@@ -168,6 +173,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 Public License at <http://www.gnu.org/licenses/> for more details.
 
 [pipxx]: https://github.com/bulletmark/pipxx
-[pipx]: https://pypa.github.io/pipx/
+[pipx]: https://pipx.pypa.io/stable/
 
 <!-- vim: se ai syn=markdown: -->

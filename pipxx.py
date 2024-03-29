@@ -190,6 +190,11 @@ def main() -> Optional[int]:
     # installs
     env = root_env() if os.geteuid() == 0 else None
 
+    if len(sys.argv) > 1:
+        cmd = sys.argv[1]
+    else:
+        cmdlist = ['pipx']
+
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     cmdlist = ['pipx', cmd] + sys.argv[2:]
 
