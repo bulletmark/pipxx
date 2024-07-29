@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional
 
-HOMESTR = str(Path.home())
+HOME = Path.home()
 VMATCH = 'venvs are in '
 
 def root_env() -> Dict[str, str]:
@@ -23,10 +23,14 @@ def root_env() -> Dict[str, str]:
             env[envvar] = tdir
     return env
 
-def unexpanduser(path: str) -> str:
-    'Return string path with $HOME in string path substituted with ~'
-    return path.replace(HOMESTR, '~', 1) \
-            if path.startswith(HOMESTR) else path
+def unexpanduser(path: str | Path) -> str:
+    'Return path name, with $HOME replaced by ~ (opposite of Path.expanduser())'
+    ppath = Path(path)
+
+    if ppath.parts[:len(HOME.parts)] != HOME.parts:
+        return str(path)
+
+    return str(Path('~', *ppath.parts[len(HOME.parts):]))
 
 def run(cmd: str, env: Optional[Dict[str, str]]) -> Optional[str]:
     'Run given shell command string'
@@ -56,14 +60,14 @@ def intercept_cmd(func: Callable) -> None:
 @intercept_cmd
 def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     'Add some extra info to list command output'
-    bdir = None
+    bdir: Optional[Path] = None
     for line in pipe(cmds, env):
         if bdir:
             fields = line.split()
             if len(fields) > 1 and fields[0] == 'package':
                 pkg = fields[1]
                 jfile = bdir / pkg / 'pipx_metadata.json'
-                with jfile.open() as fp:
+                with jfile.open() as fp:  # type: ignore
                     data = json.load(fp)
                 data = data.get('main_package', {})
                 pkg = data.get('package', '')
@@ -189,11 +193,6 @@ def main() -> Optional[int]:
     # If invoked as root then set appropriate system directories for
     # installs
     env = root_env() if os.geteuid() == 0 else None
-
-    if len(sys.argv) > 1:
-        cmd = sys.argv[1]
-    else:
-        cmdlist = ['pipx']
 
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
     cmdlist = ['pipx', cmd] + sys.argv[2:]
