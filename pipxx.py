@@ -8,12 +8,12 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Optional
+from typing import Callable, Iterator
 
 HOME = Path.home()
 VMATCH = 'venvs are in '
 
-def root_env() -> Dict[str, str]:
+def root_env() -> dict[str, str]:
     'Return environment for root installs'
     env = os.environ.copy()
     for envvar, tdir in (('PIPX_BIN_DIR', '/usr/local/bin'),
@@ -32,7 +32,7 @@ def unexpanduser(path: str | Path) -> str:
 
     return str(Path('~', *ppath.parts[len(HOME.parts):]))
 
-def run(cmd: str, env: Optional[Dict[str, str]]) -> Optional[str]:
+def run(cmd: str, env: dict[str, str] | None) -> str | None:
     'Run given shell command string'
     cmd += ' 2>/dev/null'
     try:
@@ -46,7 +46,7 @@ def run(cmd: str, env: Optional[Dict[str, str]]) -> Optional[str]:
 
     return res.stdout and res.stdout.strip()
 
-def pipe(cmd: List[str], env: Optional[Dict[str, str]]) -> Iterator[str]:
+def pipe(cmd: list[str], env: dict[str, str] | None) -> Iterator[str]:
     'Run given shell command string and yield output lines'
     res = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                            universal_newlines=True, env=env)
@@ -58,9 +58,9 @@ def intercept_cmd(func: Callable) -> None:
     intercepts[func.__name__[4:]] = func
 
 @intercept_cmd
-def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_list(cmds: list[str], env: dict[str, str] | None) -> bool:
     'Add some extra info to list command output'
-    bdir: Optional[Path] = None
+    bdir: Path | None = None
     for line in pipe(cmds, env):
         if bdir:
             fields = line.split()
@@ -87,7 +87,7 @@ def cmd_list(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
         print(line)
     return True
 
-def cmd_install_common(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_install_common(cmds: list[str], env: dict[str, str] | None) -> bool:
     'Inserts path to pyenv python executable if --python given'
     if any(opt in ('--help', '-h') for opt in cmds):
         # Intercept help output to add enhanced functionality
@@ -140,15 +140,15 @@ def cmd_install_common(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
     return False
 
 @intercept_cmd
-def cmd_install(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_install(cmds: list[str], env: dict[str, str] | None) -> bool:
     return cmd_install_common(cmds, env)
 
 @intercept_cmd
-def cmd_reinstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_reinstall(cmds: list[str], env: dict[str, str] | None) -> bool:
     return cmd_install_common(cmds, env)
 
 @intercept_cmd
-def cmd_uninstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
+def cmd_uninstall(cmds: list[str], env: dict[str, str] | None) -> bool:
     'Intercepts "." arg and substitutes it with package name'
     if '.' not in cmds:
         return False
@@ -188,7 +188,7 @@ def cmd_uninstall(cmds: List[str], env: Optional[Dict[str, str]]) -> bool:
 
     return False
 
-def main() -> Optional[int]:
+def main() -> int | None:
     'Main code'
     # If invoked as root then set appropriate system directories for
     # installs
