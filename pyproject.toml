@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pipxx"
 description = "Wrapper for pipx to add some minor functionality"
 readme = "README.md"
+license = "GPL-3.0-or-later"
 requires-python = ">=3.7"
 keywords = ["pip", "pipx"]
 classifiers = [
@@ -22,9 +23,6 @@ Homepage = "https://github.com/bulletmark/pipxx"
 
 [project.scripts]
 pipxx = "pipxx:main"
-
-[project.license]
-text = "GPLv3"
 
 [tool.setuptools_scm]
 version_scheme = "post-release"
