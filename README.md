@@ -33,7 +33,7 @@ https://github.com/bulletmark/pipxx.
 
 `pipx` is used normally to install applications for a single user. It
 can also [install applications
-globally](https://pypa.github.io/pipx/installation/#installation-options)
+globally](https://pipx.pypa.io/stable/installation/#installation-options)
 as root but that is [awkward](https://github.com/pypa/pipx/issues/754)
 because you have to manually set environment variables. `pipxx`
 recognises when it is run as root (or with `sudo`) and automatically
@@ -60,14 +60,14 @@ $ sudo pipxx environment
 
 ### Enhancement 2: Improved pipx list output
 
-[`pipx list`](https://pypa.github.io/pipx/docs/#pipx-list)
+[`pipx list`](https://pipx.pypa.io/stable/docs/#pipx-list)
 output lacks some useful information. `pipxx` adds the following
 to the `pipx list` output:
 
 1. The PyPi package name, or source directory, or VCS URL from where the
    application was installed from,
 2. Whether the application is installed as
-   [__editable__](https://pypa.github.io/pipx/docs/#pipx-install).
+   [__editable__](https://pipx.pypa.io/stable/docs/#pipx-install).
 
 ### Enhancement 3: Automatic determination of pyenv Python path for install
 
@@ -135,7 +135,7 @@ uninstalled myapp!
 ## Installation or upgrade or removal
 
 Note [pipxx is on PyPI](https://pypi.org/project/pipxx/) so just ensure
-that [`pipx`](https://pypa.github.io/pipx/) is installed then type the
+that [`pipx`](https://pipx.pypa.io/stable/) is installed then type the
 following:
 
 To install:
